@@ -1,0 +1,17 @@
+.idea
+.venv
+**/*.db
+.env
+**/__pycache__/
+backend/config/.arl
+backend/downloads
+backend/output
+backend/processing
+backend/static
+
+frontend/node_modules
+frontend/dist
+frontend/src/**/*.js
+
+downloads/*
+output/*

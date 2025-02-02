@@ -1,0 +1,15 @@
+name: album-downloader
+services:
+  downloader:
+    image: "album-downloader"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./downloads:/downloads
+      - ./output:/output
+    env_file:
+      # see .env.example
+      - .env
+    ports:
+      - "80:80"

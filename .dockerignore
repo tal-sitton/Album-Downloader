@@ -1,0 +1,14 @@
+*.sqlite
+.git
+.venv
+.env
+.env.example
+backend/config/.arl
+backend/downloads.db
+backend/identifier.sqlite
+backend/downloads
+backend/output
+backend/processing
+backend/static
+frontend/node_modules
+frontend/dist

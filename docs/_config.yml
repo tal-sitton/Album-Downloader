@@ -1,0 +1,24 @@
+remote_theme: tuur29/pages-themes-cayman
+title: Album Downloader
+description: "Music downloader app with a nice UI and a REST API that lets you download every album from Deezer"
+markdown: kramdown
+url: https://code.sitton.dev
+baseurl: /Album-Downloader
+
+plugins:
+  - jekyll-remote-theme
+  - jekyll-seo-tag
+
+color:
+  gradient_left: "#3d1379"
+  gradient_right: "#ad21c5"
+
+darkmode: true
+syntax_theme: https://stylishthemes.github.io/Syntax-Themes/pygments/css-github/pygments-monokai.css
+
+show_downloads: true
+buttons:
+  zip_hide: true
+  tar_title: About me
+  tar_url: /
+  tar_hide: false
