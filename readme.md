@@ -11,7 +11,7 @@
 - **Frontend**: Search by artist, and by album name and downloading music. Track the progress of downloads.
 - **Backend**: REST API for interacting with Deezer and managing downloads.
 - **Dockerized**: Easily deployable using Docker and Docker Compose.
-- **Self-Cleanup**: Uses cron jobs for periodic cleanup of downloads and outputs.
+- **Self-Cleanup**: Periodic cleanup of downloads and outputs.
 
 ## Prequirement
 
