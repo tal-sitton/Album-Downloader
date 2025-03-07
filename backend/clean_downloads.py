@@ -20,7 +20,10 @@ def remove_old_downloads(hour_ago: datetime):
     print(f"Found {len(older_albums)} albums older than an hour")
     for album in older_albums:
         album_path = DOWNLOADS_PATH / album
-        shutil.rmtree(album_path)
+        try:
+            shutil.rmtree(album_path)
+        except FileNotFoundError:
+            print(f"Album {album} not found (tried to delete {album_path})")
         db.delete_album(album)
         print(f"Deleted album {album}")
     print("Finished cleaning downloads")

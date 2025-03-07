@@ -2,6 +2,7 @@ import asyncio
 import os
 import uuid
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime
 from pathlib import Path
 
 from fastapi import FastAPI, BackgroundTasks, APIRouter
@@ -9,6 +10,7 @@ from starlette.responses import FileResponse
 from starlette.staticfiles import StaticFiles
 from starlette.websockets import WebSocket
 
+import clean_downloads
 import db
 import logic
 from models import Artist, BasicAlbum
@@ -101,6 +103,13 @@ async def zip_downloaded_albums(uids: str) -> str:
     zip_name = uuid.uuid4().hex
     logic.compress_albums(parsed_uids, DOWNLOADS_PATH, OUTPUTS_PATH, zip_name)
     return zip_name
+
+
+@api_router.post("/clean")
+async def clean_all():
+    clean_downloads.remove_old_downloads(datetime.utcnow())
+    clean_downloads.remove_old_outputs(datetime.utcnow())
+    return "Downloads cleaned"
 
 
 async def delete_zip(zip: Path):
