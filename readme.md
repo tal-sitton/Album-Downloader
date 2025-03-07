@@ -64,6 +64,7 @@ To Obtain your Arl TokenL
 - `WS /api/albums_status`: Websocket endpoint for tracking album download progress.
 - `GET /api/zip_downloaded_albums?uids={uids}`: Zip downloaded albums and serve them.
 - `GET /api/output/{zip_name}`: Download the zipped albums.
+- `POST /api/clean`: Clean all downloads.
 
 ## Environment Variables
 
