@@ -4,6 +4,7 @@ import json
 import os
 import shutil
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime
 from pathlib import Path
 
 import requests
@@ -133,7 +134,7 @@ def __format_files(album: BasicAlbum, album_output_path: Path, download_path: Pa
             file = album_output_path / f"{track.id}.mp3"
             artist = sanitize_filename(album.artist.name)
             album_title = sanitize_filename(album.name)
-            artists = sanitize_filename(str(track.artists))
+            release_date = datetime.fromtimestamp(album.release_date_epoch).strftime('%Y-%m-%d')
             if id3:
                 audio = MP3(file, ID3=ID3)
                 if audio.tags is None:
@@ -145,12 +146,11 @@ def __format_files(album: BasicAlbum, album_output_path: Path, download_path: Pa
                 audio_easy["title"] = title
                 audio_easy["tracknumber"] = str(track.track_number)
                 audio_easy["album"] = album_title
+                audio_easy["date"] = release_date
                 audio_easy.save()
                 new_name = title + ".mp3"
             else:
-                new_name = f"{artist} --- {album_title} --- {track.track_number} --- {artists} --- {title}.mp3"
-                if len(new_name) > 255:
-                    new_name = f"{artist} --- {album_title} --- {track.track_number} --- null --- {title}.mp3"
+                new_name = f"{artist} --- {album_title} --- {track.track_number} --- {release_date} --- {title}.mp3"
             file.rename(download_path / new_name)
         except FileNotFoundError as e:
             print(f"Error formatting file {track.name}: {e}")
