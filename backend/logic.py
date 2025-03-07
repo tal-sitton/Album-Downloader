@@ -171,6 +171,7 @@ def __download_album_cover(album: BasicAlbum, download_path: Path) -> Path:
 
 def get_album_info(album_id: str) -> DeezerAlbum:
     raw_album = dz.api.get_album(album_id)
+    raw_album["tracks"] = dz.api.get_album_tracks(album_id)
     album = DeezerAlbum(**raw_album)
     print(f"Got album {album.name}")
     return album
