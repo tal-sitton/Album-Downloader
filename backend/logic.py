@@ -3,6 +3,7 @@ import copy
 import json
 import os
 import shutil
+import uuid
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from pathlib import Path
@@ -14,6 +15,7 @@ from deezer import Deezer, TrackFormats
 from mutagen.easyid3 import EasyID3
 from mutagen.id3 import ID3, APIC
 from mutagen.mp3 import MP3
+from retrying import retry
 
 import db
 from models import Artist, BasicAlbum
@@ -96,6 +98,7 @@ def __download_album(album: BasicAlbum, download_path: Path, uid: str, id3: bool
     __format_files(album, album_output_path, download_path, id3, album_cover)
 
 
+@retry(stop_max_attempt_number=4)
 def __download_track(track: DeezerTrack, settings: dict, uid: str):
     print(f"Downloading track {track.name}")
 
@@ -117,8 +120,14 @@ def __download_track(track: DeezerTrack, settings: dict, uid: str):
         }
     })
 
-    # listener = LogListener()
-    Downloader(dz, obj, settings, None).start()
+    downloader = Downloader(dz, obj, settings, None)
+    result = downloader.downloadWrapper({
+        'trackAPI': trackAPI,
+        'albumAPI': None
+    })
+    if result: downloader.afterDownloadSingle(result)
+    if "error" in result:
+        raise Exception(result["error"])
     db.increment_album_progress(uid)
     print(f"Track {track.name} downloaded")
 
@@ -195,4 +204,4 @@ def compress_albums(uids: list[str], download_path: Path, outputs_path: Path, zi
 
 
 if __name__ == '__main__':
-    download_album("264854952", Path("downloads"), "test3")
+    download_album("717937791", Path("downloads"), uuid.uuid4().hex, False)
