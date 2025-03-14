@@ -127,6 +127,8 @@ def __download_track(track: DeezerTrack, settings: dict, uid: str):
     })
     if result: downloader.afterDownloadSingle(result)
     if "error" in result:
+        file = Path(settings.get("downloadLocation")) / f"{track.id}.mp3"
+        file.unlink(missing_ok=True)
         raise Exception(result["error"])
     db.increment_album_progress(uid)
     print(f"Track {track.name} downloaded")
