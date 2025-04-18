@@ -29,8 +29,8 @@ STATUS_UPDATE_INTERVAL = int(os.getenv("STATUS_UPDATE_INTERVAL", 5))
 DOWNLOADS_PATH = Path(downloads)
 OUTPUTS_PATH = Path(output)
 
-DOWNLOADS_PATH.mkdir(exist_ok=True)
-OUTPUTS_PATH.mkdir(exist_ok=True)
+DOWNLOADS_PATH.mkdir(parents=True, exist_ok=True)
+OUTPUTS_PATH.mkdir(parents=True, exist_ok=True)
 
 executor = ThreadPoolExecutor(max_workers=albums_download_max_workers)
 

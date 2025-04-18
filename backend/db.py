@@ -9,6 +9,7 @@ db_lock = threading.Lock()
 
 # Initialize SQLite
 downloads_folder = Path(os.getenv("DOWNLOADS_PATH", "downloads"))
+downloads_folder.mkdir(parents=True, exist_ok=True)
 DB_PATH = str(downloads_folder / "downloads.db")
 
 
