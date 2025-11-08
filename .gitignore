@@ -3,7 +3,7 @@
 **/*.db
 .env
 **/__pycache__/
-backend/config/.arl
+backend/config/arls.txt
 backend/downloads
 backend/output
 backend/processing

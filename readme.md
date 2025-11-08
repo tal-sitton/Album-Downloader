@@ -16,37 +16,41 @@
 ## Prequirement
 
 You'll need a Deezer ARL token.
-To Obtain your Arl TokenL
+After running the ui, to Obtain your Arl Token:
 
-1. login to https://www.deezer.com/
-2. F12 → Application → Cookies → "https://www.deezer.com/" → the cookie named "arl"
-3. copy the value and write it in the .env file
+1. Using the UI, hit `Renew`, this will open Deezer account activation in a new tab.
+2. Verify → F12 → Application → Cookies → "https://www.deezer.com/" → the cookie named "arl"
+3. copy the value and write it in the text box.
 
 ## Installation
 
-1. Pull the Docker image:
+1. create `config` directory, and inside `arls.txt`
     ```sh
-    docker pull ghcr.io/tal-sitton/album-downloader:latest
+    mkdir config
+    touch config/arls.txt
     ```
+### Docker compose
 
-2. Create a `.env` file based on the `.env.example` file and fill in the required environment variables:
+2. copy `docker-compose.prod.yml` to `docker-compose.yml`:
     ```sh
-    cp .env.example .env
+    cp docker-compose.prod.yml docker-compose.yml
     ```
-
+   
 3. Start the Docker container:
-   using docker compose:
     ```sh
-    docker-compose up
+    docker-compose up -d
     ```
-   or using docker run:
+
+### Docker run
+2. using docker run:
     ```sh
-    docker run -d --env-file .env -p 80:80 ghcr.io/tal-sitton/album-downloader:latest
+    docker run -d -v ./config/arls.txt:/app/config/arls.txt -p 80:80 ghcr.io/tal-sitton/album-downloader:latest
     ```
 
 ## Usage
 
 - Access the frontend UI at `http://localhost`.
+- Add new ARL tokens using the UI.
 - Use the search functionality to find artists and albums.
 - Download albums and manage your downloads through the UI.
 
@@ -57,6 +61,12 @@ To Obtain your Arl TokenL
 
 ## API Endpoints
 
+#### ARLs
+- `GET /api/arl/new`: Generate a new Deezer account. Return Verify URL.
+- `GET /api/arl/count`: Get the count of available ARL tokens.
+- `POST /api/arl/renew_arl`: Add a new ARL token to the pool.
+
+#### Search & Download
 - `GET /api/artists?name={name}`: Search for artists by name.
 - `GET /api/albums?artist_id={artist_id}`: Get albums for a specific artist.
 - `POST /api/download_album/{album_id}`: Download an album by its ID.
@@ -68,7 +78,6 @@ To Obtain your Arl TokenL
 
 ## Environment Variables
 
-- `ARL`: Deezer ARL token for authentication. (see [Prequirement](#prequirement))
 - `TRACKS_DOWNLOAD_MAX_WORKERS`: Maximum number of workers for downloading tracks.
 - `DOWNLOADS_PATH`: Path to the downloads directory.
 - `OUTPUTS_PATH`: Path to the outputs directory.

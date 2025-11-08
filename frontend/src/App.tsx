@@ -1,9 +1,10 @@
 import React from 'react';
-import {QueryClient, QueryClientProvider} from 'react-query';
+import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import {Box, createTheme, Tab, Tabs, ThemeProvider} from '@mui/material';
 import SearchToDownload from "./components/SearchToDownload";
 import {TabContext, TabPanel} from "@mui/lab";
 import Downloads from "./components/Downloads";
+import ArlsStatus from "./components/ArlsStatus";
 
 const queryClient = new QueryClient();
 
@@ -84,9 +85,9 @@ const App: React.FC = () => {
                         </TabPanel>
                         <TabPanel value={1}>
                             <Downloads/>
-                            {/*<Downloads2/>*/}
                         </TabPanel>
                     </TabContext>
+                    <ArlsStatus/>
                 </Box>
             </QueryClientProvider>
         </ThemeProvider>

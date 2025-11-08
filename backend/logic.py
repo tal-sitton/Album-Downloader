@@ -2,6 +2,7 @@ import concurrent
 import copy
 import json
 import os
+import random
 import shutil
 import uuid
 from concurrent.futures import ThreadPoolExecutor
@@ -18,6 +19,7 @@ from mutagen.mp3 import MP3
 from retrying import retry
 
 import db
+import generate_arl
 from models import Artist, BasicAlbum
 from models import DeezerAlbum, DeezerTrack
 from utils import sanitize_filename
@@ -25,22 +27,62 @@ from utils import sanitize_filename
 BITRATE = TrackFormats.MP3_128
 
 config_path = Path.cwd() / "config"
-with open(config_path / "config.json") as f:
-    SETTINGS = json.load(f)
+arls_path = config_path / "arls.txt"
 
-ARL = os.getenv("ARL")
-if not ARL:
-    with open(config_path / ".arl") as f:
-        ARL = f.read()
+if not arls_path.exists():
+    arls_path.touch()
+
+SETTINGS = json.loads((config_path / "config.json").read_text())
 
 tracks_download_max_workers = int(os.getenv("TRACKS_DOWNLOAD_MAX_WORKERS", 5))
 EXECUTOR = ThreadPoolExecutor(max_workers=tracks_download_max_workers)
-dz = Deezer()
-dz.login_via_arl(ARL)
+
+
+def generate_new_arl():
+    url = generate_arl.generate_deezer_account()
+    return url
+
+
+def count_arls() -> int:
+    arls = arls_path.read_text()
+    if arls:
+        return len(set(arls.splitlines()))
+    else:
+        return 0
+
+
+def renew_arl(arl: str):
+    with arls_path.open("a") as f:
+        f.write(arl + "\n")
+    update_arl_status()
+
+
+def __get_arl() -> str:
+    arls = arls_path.read_text().splitlines()
+    if arls:
+        return random.choice(arls)
+    else:
+        raise Exception("No active arl found. Please generate a new Deezer account.")
+
+
+def update_arl_status():
+    arls = arls_path.read_text().splitlines()
+    valid_arls = []
+    for arl in arls:
+        dz = Deezer()
+        dz.login_via_arl(arl)
+        if dz.current_user:
+            valid_arls.append(arl)
+        else:
+            print(f"ARL {arl} is no longer valid and has been removed.")
+    arls_path.write_text("\n".join(valid_arls)+"\n")
+    print("ARL status updated.")
 
 
 def get_artists(name: str) -> list[Artist]:
     print(f"Getting artists with name {name}")
+    dz = Deezer()
+    dz.login_via_arl(__get_arl())
     raw_artists = dz.api.search_artist(name)
     artists = [Artist(**artist) for artist in raw_artists["data"]]
     return artists
@@ -48,6 +90,8 @@ def get_artists(name: str) -> list[Artist]:
 
 def get_albums(artist_id: str) -> list[DeezerAlbum]:
     print(f"Getting albums from artist {artist_id}")
+    dz = Deezer()
+    dz.login_via_arl(__get_arl())
     raw_albums = []
     artist = Artist(**dz.api.get_artist(artist_id))
     while True:
@@ -101,7 +145,8 @@ def __download_album(album: BasicAlbum, download_path: Path, uid: str, id3: bool
 @retry(stop_max_attempt_number=4)
 def __download_track(track: DeezerTrack, settings: dict, uid: str):
     print(f"Downloading track {track.name}")
-
+    dz = Deezer()
+    dz.login_via_arl(__get_arl())
     trackAPI = {
         "id": track.id,
         "title": track.name,
@@ -181,6 +226,8 @@ def __download_album_cover(album: BasicAlbum, download_path: Path) -> Path:
 
 
 def get_album_info(album_id: str) -> DeezerAlbum:
+    dz = Deezer()
+    dz.login_via_arl(__get_arl())
     raw_album = dz.api.get_album(album_id)
     raw_album["tracks"] = dz.api.get_album_tracks(album_id)
     album = DeezerAlbum(**raw_album)

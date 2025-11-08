@@ -8,6 +8,10 @@ services:
     volumes:
       - ./downloads:/downloads
       - ./output:/output
+      - ./config/arls.txt:/app/config/arls.txt
+    environment:
+      - DOWNLOADS_PATH=/downloads
+      - OUTPUT_PATH=/output
     env_file:
       # see .env.example
       - .env

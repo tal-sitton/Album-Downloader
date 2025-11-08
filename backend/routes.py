@@ -6,6 +6,8 @@ from datetime import datetime
 from pathlib import Path
 
 from fastapi import FastAPI, BackgroundTasks, APIRouter
+from pydantic import BaseModel
+from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import FileResponse
 from starlette.staticfiles import StaticFiles
 from starlette.websockets import WebSocket
@@ -34,6 +36,22 @@ OUTPUTS_PATH.mkdir(parents=True, exist_ok=True)
 
 executor = ThreadPoolExecutor(max_workers=albums_download_max_workers)
 
+@api_router.get("/arl/new")
+async def arl_status() -> str:
+    status = logic.generate_new_arl()
+    return status
+
+@api_router.get("/arl/count")
+async def arls_count() -> int:
+    status = logic.count_arls()
+    return status
+
+class ARLRenewRequest(BaseModel):
+    arl: str
+
+@api_router.post("/arl/renew")
+async def renew_arl(arl: ARLRenewRequest):
+    logic.renew_arl(arl.arl)
 
 @api_router.get("/artists")
 async def get_artists(name: str) -> list[Artist]:
@@ -64,7 +82,7 @@ async def download_albums(album_id: str, id3: bool = False) -> str:
     return uid
 
 
-@api_router.get("/album_status/")
+@api_router.get("/album_status")
 async def album_status() -> list[dict]:
     """
     Get the status of all albums that is are being downloaded
@@ -92,7 +110,7 @@ async def albums_status(websocket: WebSocket):
         await asyncio.sleep(STATUS_UPDATE_INTERVAL)
 
 
-@api_router.get("/zip_downloaded_albums/")
+@api_router.get("/zip_downloaded_albums")
 async def zip_downloaded_albums(uids: str) -> str:
     """
     Zip the downloaded albums and serve them in /output

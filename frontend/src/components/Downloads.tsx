@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {getZipRoute, useFetchAlbumsStatus, useWebSocketAlbumsStatus, zipAlbums} from "../api/api";
+import {getZipRoute, useWebSocketAlbumsStatus, zipAlbums} from "../api/api";
 import {
     Accordion,
     AccordionDetails,
@@ -13,7 +13,7 @@ import {
     Checkbox,
     CircularProgress,
     FormControlLabel,
-    Grid2,
+    Grid,
     Snackbar,
     Switch,
     Tooltip,
@@ -35,8 +35,8 @@ const Downloads: React.FC = () => {
         message: "",
         severity: "success",
     });
-    // const {data: albums, isLoading} = useFetchAlbumsStatus();
-    const { albumsStatus: albums, isConnected: isLoading } = useWebSocketAlbumsStatus();    const [showErrors, setShowErrors] = useState<boolean>(false);
+    const { albumsStatus: albums, isConnected: isLoading } = useWebSocketAlbumsStatus()
+    const [showErrors, setShowErrors] = useState<boolean>(false);
 
     const handleCheckboxChange = (uid: string) => {
         setSelectedAlbums((prev) =>
@@ -79,10 +79,10 @@ const Downloads: React.FC = () => {
         <FormControlLabel control={<Switch value={showErrors} onChange={(_, checked) => setShowErrors(checked)}/>}
                           label="Show Errors"/>
 
-        <Grid2 container spacing={2} justifyContent={'center'} width={"90vw"}>
+        <Grid container spacing={2} justifyContent={'center'} width={"90vw"}>
             {albums?.map((album) => (
                 (showErrors || album.status !== "error") &&
-                <Grid2 key={album.uid} size={{xs: 10, md: 2}}>
+                <Grid key={album.uid} size={{xs: 10, md: 2}}>
                     <Card>
                         {album.thumbnail ? <CardMedia
                             component="img"
@@ -145,9 +145,9 @@ const Downloads: React.FC = () => {
                             </CardActions>
                         )}
                     </Card>
-                </Grid2>
+                </Grid>
             ))}
-        </Grid2>
+        </Grid>
         {zipping ? <CircularProgress/> :
             <Button
                 variant="contained"

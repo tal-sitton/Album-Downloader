@@ -7,12 +7,12 @@ export default defineConfig({
     server: {
         proxy: {
             "/api/albums_status": {
-                target: "ws://localhost:8000",
+                target: "ws://localhost:80",
                 changeOrigin: true,
                 ws: true,
             },
             "/api": {
-                target: "http://localhost:8000",
+                target: "http://localhost:80",
                 changeOrigin: true,
                 secure: false,
             },

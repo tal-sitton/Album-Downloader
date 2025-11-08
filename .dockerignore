@@ -3,7 +3,7 @@
 .venv
 .env
 .env.example
-backend/config/.arl
+backend/config/arls.txt
 backend/downloads.db
 backend/identifier.sqlite
 backend/downloads

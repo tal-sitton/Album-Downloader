@@ -7,7 +7,12 @@ import {Stack, Switch, Typography} from "@mui/material";
 const SearchToDownload: React.FC = () => {
     const [selectedArtist, setSelectedArtist] = useState<string | null>(null);
     const [selectedAlbum, setSelectedAlbum] = useState<string | null>(null);
-    const [selectedId3, setSelectedId3] = useState<boolean>(false);
+    const [selectedId3, setSelectedId3] = useState<boolean>(sessionStorage.getItem('id3') === 'true');
+
+    const setId3 = (newState: boolean) => {
+        sessionStorage.setItem('id3',newState ? 'true' : 'false');
+        setSelectedId3(newState);
+    }
 
     return <>
         <ArtistSearch onSelectArtist={setSelectedArtist}/>
@@ -16,7 +21,7 @@ const SearchToDownload: React.FC = () => {
             <Typography>File Name</Typography>
             <Switch
                 checked={selectedId3}
-                onChange={(event) => setSelectedId3(event.target.checked)}
+                onChange={(event) => setId3(event.target.checked)}
             />
             <Typography>ID3</Typography>
         </Stack>
